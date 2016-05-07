@@ -4,8 +4,8 @@ game.transparent = true;
 
 var score = 0;
 var scoreText, ordures, recycles;
-var gameState = {};                                                              // variable etat du jeu
-var isOn = false;
+var gameSpeed = 2; // time before item spawn
+
 
 var tools = {}; // Namespace tools for personnals (non game) functions
 
@@ -29,9 +29,15 @@ function preload() {
     */
     /***************************** SPRITES *****************************/
     game.load.image('background', 'param/img/background/background.jpg');
-    game.load.image('ampoule', 'param/img/ampoule.png');
-    game.load.image('ampOn', 'param/img/ampOn.png');
-    game.load.image('ampOff', 'param/img/ampOff.png');
+    
+	game.load.image('garbage-1', 'param/img/ordure/bouteille.png');
+	game.load.image('garbage-2', 'param/img/ordure/burger.png');    
+	game.load.image('garbage-3', 'param/img/ordure/fer_repasser.png');    
+
+	game.load.image('recycle-1', 'param/img/recycle/boiteOeufs.png');    
+    game.load.image('recycle-2', 'param/img/recycle/canette.png');    
+    game.load.image('recycle-3', 'param/img/recycle/carton.png');
+
     
     
 }
@@ -48,23 +54,14 @@ function create() {
     
     // PHYSICS //
     game.physics.arcade.enable(ordures);
-    game.physics.arcade.enable(recycles);
+    game.physics.arcade.enable(recycles);    
 
-    amp = ordures.create(tools.rand(50, game.width - 50), 0, 'ampOff');
-    //amp.scale.setTo(0.5,0.5);
-    game.physics.enable(amp, Phaser.Physics.ARCADE);
-    amp.body.enable = true;
-    amp.body.bounce.x = 1;
-    amp.body.bounce.y = 1;
-    amp.body.collideWorldBounds = true;
-
-    amp.inputEnabled = true;
-    amp.events.onInputDown.add(toggleLamp, this);
+    game.time.events.loop(Phaser.Timer.SECOND * gameSpeed, randomSpawn, this);
 
 }
 
 function update() {
-    //amp.angle += tools.rand(2, 10);
+    
 }
 
 function render() {
@@ -72,18 +69,36 @@ function render() {
 }
 
 function eliminate (element) {
+    //element.kill();
+}
 
-    // Removes the star from the screen
-    element.kill();
+function randomSpawn(){
+	if (tools.rand(1, 2) == 1){
+		randomSpawnGarbage();
+	}else {
+		randomSpawnRecycle();
+	}
 }
         
-function toggleLamp(){
-	if (isOn){
-		amp.loadTexture('ampOff', 0);
-		isOn = false;
-	}else {
-		amp.loadTexture('ampOn', 0);
-		isOn = true;
+function randomSpawnGarbage(nb){
+	if (isNaN(nb) || nb == 0){
+		nb = 1;
 	}
-	
+	for (var i = 0; i < nb; i++){
+		item = ordures.create(tools.rand(0, game.width), 0, 'garbage-' + tools.rand(1, 3));	
+		game.physics.arcade.enable(item);
+	}
+	ordures.callAll('events.onInputDown.add', 'events.onInputDown', eliminate);
+}
+
+function randomSpawnRecycle(nb){
+	if (isNaN(nb) || nb == 0){
+		nb = 1;
+	}
+	for (var i = 0; i < nb; i++){
+		item = recycles.create(tools.rand(0, game.width), 0, 'garbage-' + tools.rand(1, 3));	
+		game.physics.arcade.enable(item);
+		
+	}
+	ordures.callAll('events.onInputDown.add', 'events.onInputDown', eliminate);
 }
