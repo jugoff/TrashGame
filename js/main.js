@@ -28,7 +28,7 @@ function preload() {
 	game.load.image('background', 'param/img/background/background.jpg');
     
     game.load.image('conteneur-jaune', 'param/img/conteneur-jaune.png');
-    
+	
 	game.load.image('garbage-1', 'param/img/ordure/ampoule.png');
 	game.load.image('garbage-2', 'param/img/ordure/banane.png');    
 	game.load.image('garbage-3', 'param/img/ordure/batterie.png');    
@@ -41,6 +41,8 @@ function preload() {
 	game.load.image('garbage-10', 'param/img/ordure/sac.png');    
 	game.load.image('garbage-11', 'param/img/ordure/tv.png');    
 
+	
+	
  	game.load.image('recycle-1', 'param/img/recycle/boiteOeufs.png');    
     game.load.image('recycle-2', 'param/img/recycle/canette.png');    
     game.load.image('recycle-3', 'param/img/recycle/carton.png');
@@ -61,6 +63,13 @@ function create() {
     ordures = game.add.group();
     recycles = game.add.group();
     
+	// Nombre d'image bonne et mauvaise
+	ordures.nbMateria = 3;
+	recycles.nbMateria = 11;
+	// Nom des préfixe d'image
+	ordures.prefixName = "garbage";
+	recycles.prefixName = "recycle";
+	
     // PHYSICS //
     game.physics.arcade.enable(ordures);
     game.physics.arcade.enable(recycles);    
@@ -78,26 +87,52 @@ function render() {
     
 }
 
-function eliminate (element) {
-    element.kill();
+function eliminate (e) {
+    e.kill();
 }
 
 function randomSpawn(){
-	if (tools.rand(1, 2) == 1){
-		randomSpawnGarbage();
-	}else {
-		randomSpawnRecycle();
-	}
+	randomCreate(tools.rand(0,1) ? ordures : recycles );
 }
         
+function randomCreate(group, nb){
+	if (isNaN(nb) || nb == 0){
+		nb = 1;
+	}
+	for (var i = 0; i < nb; i++){
+		var dieSprite = getKilledElement(group);
+		// Si il y en a de tué, on jou à Jésus
+		if ( dieSprite != null){
+			console.log('get revived');
+			dieSprite.revive();
+			dieSprite.x = tools.rand(0, game.width);
+			dieSprite.y = 0;
+			// On change sa texture histoire de pas avoir trop de fois le même objet affiché
+			dieSprite.loadTexture(group.prefixName + '-' + tools.rand(1, group.nbMateria), 0, false);
+		}else { // Sinon on le créé
+			item = group.create(tools.rand(0, game.width), 0, group.prefixName + '-' + tools.rand(1, 3));	
+			game.physics.arcade.enable(item);
+			item.events.onOutOfBounds.add( eliminate, this );
+		}		
+	}	
+}
+
+/* A garder au cas où
 function randomSpawnGarbage(nb){
 	if (isNaN(nb) || nb == 0){
 		nb = 1;
 	}
 	for (var i = 0; i < nb; i++){
-		item = ordures.create(tools.rand(0, game.width), 0, 'garbage-' + tools.rand(1, 3));	
-		game.physics.arcade.enable(item);
-		item.events.onOutOfBounds.add( eliminate, this );
+		var dieOrdure = getKilledElement(ordures);
+		if ( dieOrdure != null){
+			dieOrdure.revive();
+			dieOrdure.x = tools.rand(0, game.width);
+			dieOrdure.y = 0;
+		}else {
+			item = ordures.create(tools.rand(0, game.width), 0, 'garbage-' + tools.rand(1, 3));	
+			game.physics.arcade.enable(item);
+			item.events.onOutOfBounds.add( eliminate, this );
+		}		
 	}	
 }
 
@@ -106,10 +141,26 @@ function randomSpawnRecycle(nb){
 		nb = 1;
 	}
 	for (var i = 0; i < nb; i++){
-		item = recycles.create(tools.rand(0, game.width), 0, 'garbage-' + tools.rand(1, 3));	
-		game.physics.arcade.enable(item);
-		item.events.onOutOfBounds.add( eliminate, this );	
+		var dieOrdure = getKilledElement(ordures);
+		if ( dieOrdure != null){
+			dieOrdure.revive();
+			dieOrdure.x = tools.rand(0, game.width);
+			dieOrdure.y = 0;
+		}else {
+			item = recycles.create(tools.rand(0, game.width), 0, 'recycle-' + tools.rand(1, 3));	
+			game.physics.arcade.enable(item);
+			item.events.onOutOfBounds.add( eliminate, this );	
+		}
 	}
+}
+*/
+function getKilledElement(group){
+	returnSpr = null;
+	console.log(group);
+	group.forEachDead(function(spr) {   
+		returnSpr = spr;  
+	});
+	return returnSpr;
 }
 
 function updatePositionsGroups(group){
