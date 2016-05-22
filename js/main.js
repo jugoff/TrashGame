@@ -1,16 +1,22 @@
+
+var stopTime = 60;
+var scoreRequired = 30;
 var gameWidth = 1536;
 var gameHeight = 2048;
+
+
+var progressBar = document.getElementById("progressimg");
+
 var game = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS, 'gameDiv', { preload: preload, create: create, update: update }); // Objet jeu de type Phaser & dimensions iPad
 
 game.transparent = true;
 
 var score = 0;
-var scoreText, ordures, recycles, spawnEvent, endGameEvent;
-var gameSpeed = 2; // time before item spawn
-var piece = false;
+var scoreText, ordures, recycles, spawnEvent, endGameEvent, backgroundMusic;
+var gameSpeed = 1; // time before item spawn
+var piece, inFadeAction = false;
 
-var stopTime = 10;
-var scoreRequired = 30;
+
 
 
 var tools = {}; // Namespace tools for personnals (non game) functions
@@ -21,12 +27,17 @@ tools.rand = function(min, max) {
 
 function preload() {
     
-    
+    Loadgo.init(progressBar, {
+	  'direction':    'lr',
+	  'filter':    'grayscale'
+	});
     
     /*************************** GAME SCALE ****************************/
    	game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-    // game.scale.setScreenSize();
+    //game.scale.setScreenSize();
     
+     /*----------------------------- Audio ---------------------------*/
+    game.load.audio('music-ambient', 'param/audio/bensound-energy.mp3');
     
     /***************************** SPRITES *****************************/
 	game.load.image('background', 'param/img/background/background.jpg');
@@ -36,7 +47,7 @@ function preload() {
 	game.load.image('garbage-1', 'param/img/ordure/ampoule.png');
 	game.load.image('garbage-2', 'param/img/ordure/banane.png');    
 	game.load.image('garbage-3', 'param/img/ordure/batterie.png');    
-	game.load.image('garbage-4', 'param/img/ordure/bouteille.png');    
+	game.load.image('garbage-4', 'param/img/ordure/bouteilleVerre.png');    
 	game.load.image('garbage-5', 'param/img/ordure/burger.png');    
 	game.load.image('garbage-6', 'param/img/ordure/fer_repasser.png');    
 	game.load.image('garbage-7', 'param/img/ordure/pile.png');    
@@ -47,16 +58,16 @@ function preload() {
     
     /*--------------------------- Recyclables -------------------------*/
  	game.load.image('recycle-1', 'param/img/recycle/boiteOeufs.png');    
- 	game.load.image('recycle-1', 'param/img/recycle/bouteille.png');    
-    game.load.image('recycle-2', 'param/img/recycle/canette.png');    
-    game.load.image('recycle-3', 'param/img/recycle/carton.png');
-    game.load.image('recycle-4', 'param/img/recycle/conserve.png');
-    game.load.image('recycle-3', 'param/img/recycle/journal.png');
-    game.load.image('recycle-6', 'param/img/recycle/lessive.png');
-    game.load.image('recycle-7', 'param/img/recycle/lettre.png');
-    game.load.image('recycle-8', 'param/img/recycle/sirop.png');
+ 	game.load.image('recycle-2', 'param/img/recycle/bouteilleEau.png');    
+    game.load.image('recycle-3', 'param/img/recycle/canette.png');    
+    game.load.image('recycle-4', 'param/img/recycle/carton.png');
+    game.load.image('recycle-5', 'param/img/recycle/conserve.png');
+    game.load.image('recycle-6', 'param/img/recycle/journal.png');
+    game.load.image('recycle-7', 'param/img/recycle/lessive.png');
+    game.load.image('recycle-8', 'param/img/recycle/lettre.png');
+    game.load.image('recycle-9', 'param/img/recycle/sirop.png');
     
-    
+   
 }
 
 function create() {
@@ -68,7 +79,7 @@ function create() {
     conteneur.x = (game.width / 2) - (conteneur.width / 2);
     conteneur.y = game.height - conteneur.height;
     
-    scoreText = game.add.text(20, 20, 'score: 0', { fontSize: '32px', fill: '#000' });
+    scoreText = game.add.text(game.width - 50 , 20, '0', { fontSize: '32px', fill: '#000' });
     scoreText.visible = true;
 	
     ordures = game.add.group();
@@ -76,7 +87,7 @@ function create() {
 
   	// Nombre d'image bonne et mauvaise
   	ordures.nbMateria = 11;
-  	recycles.nbMateria = 8;
+  	recycles.nbMateria = 9;
   	// Nom des préfixe d'image
   	ordures.prefixName = "garbage";
   	recycles.prefixName = "recycle";
@@ -92,6 +103,9 @@ function create() {
     spawnEvent = game.time.events.loop(Phaser.Timer.SECOND * gameSpeed, randomSpawn, this);
     endGameEvent = game.time.events.add(Phaser.Timer.SECOND * stopTime, endGame, this);
 
+    // AUDIO //
+    backgroundMusic = game.add.audio('music-ambient');
+    backgroundMusic.play();
 
 }
 
@@ -99,6 +113,7 @@ function update() {
 
 	updatePositionsGroups(ordures);
     updatePositionsGroups(recycles);
+    updateProgressBar();
 	
 }
 
@@ -106,25 +121,30 @@ function render() {
     
 }
 
-function collisionHandler (sprite, group) {
-  console.log('sprite handler' + sprite);
-  console.log('group handler' + group);
-  if (true){
-    score++;
-  }else {
-    score--;
-  }
-  eliminate(e1);
-}
+function updateProgressBar(){
+	
+	secondTimer = game.time.now / 1000;
+	percent = secondTimer / stopTime * 100;
+	Loadgo.setprogress(progressBar, percent);
+	
+	if (percent >= 90 && !inFadeAction){
+		backgroundMusic.fadeOut(5000);
+		inFadeAction = true;
+	}
 
+	if (percent >= 100){
+		endGame();
+	}
+
+}
 
 function eliminate (e) {
 
 	if (e.isGood){
-		scoreText.text = "score : " + ++score;
+		scoreText.text = ++score;
 	}else {
 		if (score > 0){
-			scoreText.text = "score : " + --score;
+			scoreText.text = --score;
 		}
 	}	
 	
@@ -225,9 +245,11 @@ function updatePositionsGroups(group){
 		}else {
 			if (elem.stopedDrag){
 				if (elem.x < game.width / 2){
-					elem.x -= 10;
+					elem.x -= 15;
+					elem.angle -= 5;
 				}else {
-					elem.x += 10;
+					elem.x += 15;
+					elem.angle += 5;
 				}
 				if (elem.x < 0 || elem.x > game.width){
 					elem.destroy();
@@ -239,7 +261,7 @@ function updatePositionsGroups(group){
 } 
 
 function endGame(){
-	endText = game.add.text(game.width/2, game.height/2, 'Jeu terminé', { fontSize: '32px', fill: '#000' });
+	endText = game.add.text(game.width/2 - 100, 400, 'Jeu terminé', { fontSize: '32px', fill: '#000' });
     endText.visible = true;
     spawnEvent.pause = true;
 	game.paused = true;
