@@ -9,11 +9,13 @@
 
 #progressBar {
 	position: absolute;
-	margin-left: 65%;
-    top: 10px;
-    width: 30%;
+	margin-left: 55%;
+    top: 22px;
+    right: 10px;
+    width: 55%;
     background: transparent;
 }
+
 .progress {
-	float: right;
+    float: right;
 }

@@ -10,7 +10,7 @@ var game = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS, 'gameDiv', { pr
 game.transparent = true;
 
 var score = 0;
-var scoreText, ordures, recycles, spawnEvent, endGameEvent, backgroundMusic;
+var scoreText, ordures, recycles, spawnEvent, endGameEvent, backgroundMusic, spritePlus, spriteMoins;
 var gameSpeed = 0.6; // time before item spawn
 var piece, inFadeAction, readyToStart = false;
 
@@ -55,8 +55,8 @@ function preload() {
     /***************************** SPRITES *****************************/
 	game.load.image('background', 'param/img/background/background.jpg');
     game.load.image('conteneur', 'param/img/conteneur.png');
-    game.load.image('score+', 'param/img/recycle/plus5.png');
-    game.load.image('score-', 'param/img/recycle/moins5.png');
+    game.load.image('scoreP', 'param/img/plus5.png');
+    game.load.image('scoreM', 'param/img/moins5.png');
     
     /*----------------------------- Ordures ---------------------------*/
 	game.load.image('garbage-1', 'param/img/ordure/ampoule.png');
@@ -96,8 +96,7 @@ function create() {
     conteneur.x = (game.width / 2) - (conteneur.width / 2);
     conteneur.y = game.height - conteneur.height;
     
-    /*scoreText = game.add.text(game.width - 50 , 20, '0', { fontSize: '32px', fill: '#000' });*/
-    scoreText = game.add.bitmapText(game.width - 60, 20, 'scoreFont', '0', 48);
+    scoreText = game.add.bitmapText(game.width - 220, 20, 'scoreFont', '0', 50);
     scoreText.visible = true;
 	
     ordures = game.add.group();
@@ -162,14 +161,21 @@ function eliminate (e) {
 
 	if (e.isGood){
 		score += scoreNumber;
-		scoreText.text = score;
+		spritePlus = game.add.sprite( game.width - (game.width / 4), game.height - conteneur.height, 'scoreP');
+		game.physics.arcade.enable(spritePlus);
+		spritePlus.events.onOutOfBounds.add( function(el){ el.destroy(); }, this );
+		spritePlus.body.gravity.y = 500;
+
 	}else {
 		if (score > 0){
 			score -= scoreNumber;
-			scoreText.text = score;
+			spriteMoins = game.add.sprite( game.width / 4 - conteneur.width , game.height - conteneur.height, 'scoreM');			
+			game.physics.arcade.enable(spriteMoins);
+			spriteMoins.events.onOutOfBounds.add( function(el){ el.destroy(); }, this );
+			spriteMoins.body.gravity.y = 500;
 		}
 	}	
-	
+	scoreText.text = score;
     e.destroy();
 }
    
