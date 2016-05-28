@@ -3,18 +3,16 @@ var stopTime = 60;
 var scoreRequired = 30;
 var gameWidth = 1536;
 var gameHeight = 2048;
+var scoreNumber = 5;
 
-
-var progressBar = document.getElementById("progressimg");
-
-var game = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS, 'gameDiv', { preload: preload, create: create, update: update }); // Objet jeu de type Phaser & dimensions iPad
+var game = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS, 'gameDiv', { preload: initGame }); // Objet jeu de type Phaser & dimensions iPad
 
 game.transparent = true;
 
 var score = 0;
 var scoreText, ordures, recycles, spawnEvent, endGameEvent, backgroundMusic;
-var gameSpeed = 1; // time before item spawn
-var piece, inFadeAction = false;
+var gameSpeed = 0.6; // time before item spawn
+var piece, inFadeAction, readyToStart = false;
 
 
 
@@ -25,12 +23,27 @@ tools.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+tools.setColor = function(value) {
+    value = value / 100;
+    var c = ( (1 - value ) * 120 ).toString(10);
+    return ["hsl(",c,",90%,50%)"].join("");
+}
+
+function initGame(){
+	// Menu before game start
+	
+	readyToStart = true;
+	if (readyToStart){
+		startGame();
+	}
+}
+
+function startGame(){
+	$('canvas').first().remove();
+	game = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS, 'gameDiv', { preload: preload, create: create, update: update }); 
+}
+
 function preload() {
-    
-    Loadgo.init(progressBar, {
-	  'direction':    'lr',
-	  'filter':    'grayscale'
-	});
     
     /*************************** GAME SCALE ****************************/
    	game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -42,6 +55,8 @@ function preload() {
     /***************************** SPRITES *****************************/
 	game.load.image('background', 'param/img/background/background.jpg');
     game.load.image('conteneur', 'param/img/conteneur.png');
+    game.load.image('score+', 'param/img/recycle/plus5.png');
+    game.load.image('score-', 'param/img/recycle/moins5.png');
     
     /*----------------------------- Ordures ---------------------------*/
 	game.load.image('garbage-1', 'param/img/ordure/ampoule.png');
@@ -67,7 +82,9 @@ function preload() {
     game.load.image('recycle-8', 'param/img/recycle/lettre.png');
     game.load.image('recycle-9', 'param/img/recycle/sirop.png');
     
+    /*--------------------------- Font ------------------------------*/
    
+   game.load.bitmapFont('scoreFont', 'param/img/font/font.png', 'param/img/font/font.xml');
 }
 
 function create() {
@@ -79,7 +96,8 @@ function create() {
     conteneur.x = (game.width / 2) - (conteneur.width / 2);
     conteneur.y = game.height - conteneur.height;
     
-    scoreText = game.add.text(game.width - 50 , 20, '0', { fontSize: '32px', fill: '#000' });
+    /*scoreText = game.add.text(game.width - 50 , 20, '0', { fontSize: '32px', fill: '#000' });*/
+    scoreText = game.add.bitmapText(game.width - 60, 20, 'scoreFont', '0', 48);
     scoreText.visible = true;
 	
     ordures = game.add.group();
@@ -100,8 +118,8 @@ function create() {
     game.physics.arcade.enable(ordures);
     game.physics.arcade.enable(recycles);
 
-    spawnEvent = game.time.events.loop(Phaser.Timer.SECOND * gameSpeed, randomSpawn, this);
-    endGameEvent = game.time.events.add(Phaser.Timer.SECOND * stopTime, endGame, this);
+    spawnEvent = spawnEvent == null ? game.time.events.loop(Phaser.Timer.SECOND * gameSpeed, randomSpawn, this) : spawnEvent;
+    endGameEvent = endGameEvent == null ? game.time.events.add(Phaser.Timer.SECOND * stopTime, endGame, this) : endGameEvent;
 
     // AUDIO //
     backgroundMusic = game.add.audio('music-ambient');
@@ -125,7 +143,8 @@ function updateProgressBar(){
 	
 	secondTimer = game.time.now / 1000;
 	percent = secondTimer / stopTime * 100;
-	Loadgo.setprogress(progressBar, percent);
+	$('.progress').css('width', 100 - percent + '%');
+	$('.progress-bar').css('background-color', tools.setColor(percent) );
 	
 	if (percent >= 90 && !inFadeAction){
 		backgroundMusic.fadeOut(5000);
@@ -138,27 +157,22 @@ function updateProgressBar(){
 
 }
 
+
 function eliminate (e) {
 
 	if (e.isGood){
-		scoreText.text = ++score;
+		score += scoreNumber;
+		scoreText.text = score;
 	}else {
 		if (score > 0){
-			scoreText.text = --score;
+			score -= scoreNumber;
+			scoreText.text = score;
 		}
 	}	
 	
     e.destroy();
 }
-
-function randomSpawn(){
-	if (tools.rand(1, 2) == 1){
-		randomSpawnGarbage();
-	}else {
-		randomSpawnRecycle();
-	}
-}
-        
+   
 function randomSpawn(){
 	randomCreate(tools.rand(0,1) ? ordures : recycles );
 }
@@ -168,7 +182,7 @@ function randomCreate(group, nb){
 		nb = 1;
 	}
 	for (var i = 0; i < nb; i++){
-			item = group.create((piece ? 0 : game.width), tools.rand(0, game.height / 4), group.prefixName + '-' + tools.rand(1, group.nbMateria));
+			item = group.create((piece ? 0 : game.width), tools.rand(0, game.height / 2.8), group.prefixName + '-' + tools.rand(1, group.nbMateria));
 			game.physics.arcade.enable(item);
 			item.events.onOutOfBounds.add( eliminate, this );
 			item.isGood = group.isGood;
@@ -177,6 +191,7 @@ function randomCreate(group, nb){
 		    item.input.enableDrag();
 		    item.events.onDragStart.add(onDragStart, this);
 		    item.events.onDragStop.add(onDragStop, this);
+		    item.anchor.setTo(0.5,0.5);
 			piece = piece ? false : true;
 	}
 }
