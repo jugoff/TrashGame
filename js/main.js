@@ -4,13 +4,15 @@ var scoreRequired = 30;
 var gameWidth = 1536;
 var gameHeight = 2048;
 var scoreNumber = 5;
-
 var game = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS, 'gameDiv', { preload: initGame }); // Objet jeu de type Phaser & dimensions iPad
+
 
 game.transparent = true;
 
 var score = 0;
-var scoreText, ordures, recycles, spawnEvent, endGameEvent, backgroundMusic, spritePlus, spriteMoins;
+var scoreText, ordures, recycles, spawnEvent, endGameEvent, 
+	backgroundMusic, spritePlus, spriteMoins, timer, timeEvent;
+
 var gameSpeed = 0.6; // time before item spawn
 var piece, inFadeAction, readyToStart = false;
 
@@ -20,7 +22,7 @@ var piece, inFadeAction, readyToStart = false;
 var tools = {}; // Namespace tools for personnals (non game) functions
 
 tools.rand = function(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 tools.setColor = function(value) {
@@ -32,7 +34,7 @@ tools.setColor = function(value) {
 function initGame(){
 	// Menu before game start
 	
-	readyToStart = true;
+	readyToStart = false;
 	if (readyToStart){
 		startGame();
 	}
@@ -40,7 +42,12 @@ function initGame(){
 
 function startGame(){
 	$('canvas').first().remove();
+	$('.mainImg').hide();
+	timer = 0;
+	delete game;
 	game = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS, 'gameDiv', { preload: preload, create: create, update: update }); 
+	game.transparent = true;
+
 }
 
 function preload() {
@@ -88,6 +95,7 @@ function preload() {
 }
 
 function create() {
+	
     game.physics.startSystem(Phaser.Physics.ARCADE);
    	game.physics.arcade.gravity.y = 200;
 
@@ -116,9 +124,9 @@ function create() {
     // PHYSICS //
     game.physics.arcade.enable(ordures);
     game.physics.arcade.enable(recycles);
-
-    spawnEvent = spawnEvent == null ? game.time.events.loop(Phaser.Timer.SECOND * gameSpeed, randomSpawn, this) : spawnEvent;
-    endGameEvent = endGameEvent == null ? game.time.events.add(Phaser.Timer.SECOND * stopTime, endGame, this) : endGameEvent;
+    game.time.events.events = [];
+    spawnEvent = game.time.events.loop(Phaser.Timer.SECOND * gameSpeed, randomSpawn, this);
+    timeEvent =  game.time.events.loop(1000, function(){ timer++; }, this);
 
     // AUDIO //
     backgroundMusic = game.add.audio('music-ambient');
@@ -140,8 +148,7 @@ function render() {
 
 function updateProgressBar(){
 	
-	secondTimer = game.time.now / 1000;
-	percent = secondTimer / stopTime * 100;
+	percent = timer / stopTime * 100;
 	$('.progress').css('width', 100 - percent + '%');
 	$('.progress-bar').css('background-color', tools.setColor(percent) );
 	
@@ -163,6 +170,7 @@ function eliminate (e) {
 		score += scoreNumber;
 		spritePlus = game.add.sprite( game.width - (game.width / 4), game.height - conteneur.height, 'scoreP');
 		game.physics.arcade.enable(spritePlus);
+		spritePlus.checkWorldBounds = true;
 		spritePlus.events.onOutOfBounds.add( function(el){ el.destroy(); }, this );
 		spritePlus.body.gravity.y = 500;
 
@@ -171,6 +179,7 @@ function eliminate (e) {
 			score -= scoreNumber;
 			spriteMoins = game.add.sprite( game.width / 4 - conteneur.width , game.height - conteneur.height, 'scoreM');			
 			game.physics.arcade.enable(spriteMoins);
+			spritePlus.checkWorldBounds = true;
 			spriteMoins.events.onOutOfBounds.add( function(el){ el.destroy(); }, this );
 			spriteMoins.body.gravity.y = 500;
 		}
@@ -208,9 +217,7 @@ function onDragStart(sprite, pointer) {
 }
 
 function onDragStop(sprite, pointer) {
-	
     sprite.stopedDrag = true;
-    sprite.deleteTimer = game.time.now + 1000;
 }
 
 
@@ -254,13 +261,6 @@ function updatePositionsGroups(group){
 	        	elem.x -= 6;
 	        }
 
-	        /*
-	        if (elem.stopedDrag){
-	        	if (game.time.now >= elem.deleteTimer){
-	        		elem.destroy();
-	        	}
-			}
-			*/
 	        elem.rotation = game.physics.arcade.angleToXY(elem, game.width / 2, (game.height - conteneur.height));
 	       
 		}else {
@@ -286,4 +286,10 @@ function endGame(){
     endText.visible = true;
     spawnEvent.pause = true;
 	game.paused = true;
+	backToMenu();
+}
+
+function backToMenu(){
+	$('canvas').first().remove();
+	$('.mainImg').show();
 }
