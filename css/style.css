@@ -9,11 +9,59 @@
 
 #progressBar {
 	position: absolute;
-	margin-left: 65%;
-    top: 10px;
-    width: 30%;
+    top: 4%;
+	margin-left: 55%;
+    right: 10px;
+    width: 55%;
     background: transparent;
 }
+
 .progress {
-	float: right;
+    float: right;
+}
+
+.startButton {
+	position: relative;
+	margin-top: 92%;
+	-moz-box-shadow: 0px 11px 12px -6px #3e7327;
+	-webkit-box-shadow: 0px 11px 12px -6px #3e7327;
+	box-shadow: 0px 11px 12px -6px #3e7327;
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #87f052), color-stop(1, #62bd35));
+	background:-moz-linear-gradient(top, #87f052 5%, #62bd35 100%);
+	background:-webkit-linear-gradient(top, #87f052 5%, #62bd35 100%);
+	background:-o-linear-gradient(top, #87f052 5%, #62bd35 100%);
+	background:-ms-linear-gradient(top, #87f052 5%, #62bd35 100%);
+	background:linear-gradient(to bottom, #87f052 5%, #62bd35 100%);
+/*	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#87f052', endColorstr='#62bd35',GradientType=0);*/
+	background-color:#87f052;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+	border:1px solid #4b8f29;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:32px;
+	font-weight:bold;
+	padding:6px 12px;
+	text-decoration:none;
+	text-shadow:0px 2px 0px #5b8a3c;
+	border-radius:16px;
+}
+
+.startButton:hover, a:hover {
+	text-decoration: none;
+}
+
+
+.mainImg {
+	margin: 0 auto;
+	width: 100%;
+	height: 100%;
+	position:absolute;
+    background-image: url(../param/img/splash.jpg);
+    background-size:100% auto;
+    background-repeat: no-repeat;
+    text-align: center;
 }
