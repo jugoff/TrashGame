@@ -29,12 +29,13 @@ var musicVolume = 1;
 
 /* Fonction appelée lors de la victoire */
 function win(score) {
-    backToMenu();
+
+    reStartModule();
 }
 
 /* Fonction appelée lors de la défaite */
 function lose(score) {
-    backToMenu();
+    reStartModule();
 }
 
 /******* Jeu (Ne pas modifier) *******/
@@ -317,11 +318,11 @@ function endGame() {
     spawnEvent.pause = true;
 
     if (stopGameProcess()) {
-    	if (score >= scoreRequired) {
-			win(score);
-		} else {
-			lose(score);
-		}
+      if (score >= scoreRequired) {
+  			win(score);
+  		} else {
+  			lose(score);
+  		}
     }
 
 }

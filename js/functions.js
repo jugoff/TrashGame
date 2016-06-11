@@ -2,7 +2,7 @@
  * iDol scratch game
  * @author Dolmen Technologies
  * V1.0
- * 
+ *
  * Use idol-tickets.js to manage tickets game
  */
 
@@ -15,12 +15,20 @@
 */
 function startModule(param)
 {
+  //jQuery("#validate button").bind(isMobile?'touchstart':'mousedown',function(){$(this).css("background-position","0 bottom");});
+  //jQuery("#validate button").bind(isMobile?'touchend':'mouseup',function(){tickets.sendResults(my_prize_index);});
+
 	if (param) context = param;
-	
-	//Do something
+	jQuery("body").css("background-image","url("+tickets.uncacheable("param/img/bg.png")+")");
+	jQuery("#validate button").css("background-image","url("+tickets.uncacheable("param/img/button.png")+")");
+
+	my_prize_index = tickets.play();
+	tickets.displayStatus('#results');
+
+	// Display splash screen
 	backToMenu();
 
-	iDol.output('module_output_event', outputParam);
+	//iDol.output('module_output_event', outputParam);
 
 }
 
@@ -31,12 +39,15 @@ function startModule(param)
 */
 function reStartModule(param)
 {
-	if (param) context = param;
-	
-	//Do something
+
+ my_prize_index = tickets.play();
+ tickets.displayStatus('#results');
+ $('#validate').slideUp();
+ $("#validate button").css("background-position","0 top");
+
+ // Display splash screen
 	backToMenu();
-	
-	iDol.output('module_output_event', outputParam);
+
+	//iDol.output('module_output_event', outputParam);
 
 }
-
