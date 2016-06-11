@@ -1,67 +1,345 @@
 /** GENERAL **/
+
 * {
+
 	margin:0;
+
 	padding:0;
+
 	-webkit-touch-callout:none;
+
 	-webkit-tap-highlight-color: rgba(0,0,0,0); 
+
 	-webkit-user-select: none;
+
 }
+
+
 
 #progressBar {
+
 	position: absolute;
+
     top: 4%;
+
 	margin-left: 55%;
+
     right: 10px;
+
     width: 55%;
+
     background: transparent;
+
 }
+
+
 
 .progress {
+
     float: right;
+
 }
+
+
 
 .startButton {
+
 	position: relative;
+
 	margin-top: 92%;
+
 	-moz-box-shadow: 0px 11px 12px -6px #3e7327;
+
 	-webkit-box-shadow: 0px 11px 12px -6px #3e7327;
+
 	box-shadow: 0px 11px 12px -6px #3e7327;
+
 	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #87f052), color-stop(1, #62bd35));
+
 	background:-moz-linear-gradient(top, #87f052 5%, #62bd35 100%);
+
 	background:-webkit-linear-gradient(top, #87f052 5%, #62bd35 100%);
+
 	background:-o-linear-gradient(top, #87f052 5%, #62bd35 100%);
+
 	background:-ms-linear-gradient(top, #87f052 5%, #62bd35 100%);
+
 	background:linear-gradient(to bottom, #87f052 5%, #62bd35 100%);
+
 /*	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#87f052', endColorstr='#62bd35',GradientType=0);*/
+
 	background-color:#87f052;
+
 	-moz-border-radius:4px;
+
 	-webkit-border-radius:4px;
+
 	border-radius:4px;
+
 	border:1px solid #4b8f29;
+
 	display:inline-block;
+
 	cursor:pointer;
+
 	color:#ffffff;
+
 	font-family:Arial;
+
 	font-size:32px;
+
 	font-weight:bold;
+
 	padding:6px 12px;
+
 	text-decoration:none;
+
 	text-shadow:0px 2px 0px #5b8a3c;
+
 	border-radius:16px;
+
 }
 
+
+
 .startButton:hover, a:hover {
+
 	text-decoration: none;
+
 }
+
+
+
 
 
 .mainImg {
+
 	margin: 0 auto;
+
 	width: 100%;
+
 	height: 100%;
+
 	position:absolute;
+
     background-image: url(../param/img/splash.jpg);
+
     background-size:100% auto;
+
     background-repeat: no-repeat;
+
     text-align: center;
+
+}
+
+
+
+
+
+
+
+
+
+#logoEcole {
+
+    width: 30%;
+
+}
+
+
+
+#logoDolmen {
+
+    width: 40%;
+
+}
+
+
+
+#creditTitle {
+
+    position: relative;
+
+    align-self: center;
+
+    width: 60%;
+
+    margin-top: 20px;
+
+    margin-left: 20%;
+
+    margin-right: 20%;
+
+    padding-bottom: 30px;
+
+}
+
+
+
+#p1 {
+
+    text-align: center;
+
+    margin-left: 5%;
+
+    margin-right: 5%;
+
+}
+
+
+
+#devTeam {
+
+    text-align: center;
+
+    margin-top: 10%;
+
+}
+
+
+
+#music {
+
+    position: relative;
+
+    height: 80px;
+
+    width: 100%;
+
+    opacity: 70%;
+
+}
+
+
+
+#musicCredits {
+
+    margin-top: 10%;
+
+    text-align: center;
+
+
+
+}
+
+
+
+#thanks {
+
+    text-align: center;
+
+    margin-top: 10%;
+
+    margin-left: 5%;
+
+}
+
+
+
+#return {
+
+    margin-top: 10px;
+
+    height: 40%;
+
+    width: 40%;
+
+
+
+	-moz-box-shadow: 0px 11px 12px -6px #3e7327;
+
+	-webkit-box-shadow: 0px 11px 12px -6px #3e7327;
+
+	box-shadow: 0px 11px 12px -6px #3e7327;
+
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #87f052), color-stop(1, #62bd35));
+
+	background:-moz-linear-gradient(top, #87f052 5%, #62bd35 100%);
+
+	background:-webkit-linear-gradient(top, #87f052 5%, #62bd35 100%);
+
+	background:-o-linear-gradient(top, #87f052 5%, #62bd35 100%);
+
+	background:-ms-linear-gradient(top, #87f052 5%, #62bd35 100%);
+
+	background:linear-gradient(to bottom, #87f052 5%, #62bd35 100%);
+
+	background-color:#87f052;
+
+	-moz-border-radius:4px;
+
+	-webkit-border-radius:4px;
+
+	border-radius:4px;
+
+	border:1px solid #4b8f29;
+
+	cursor:pointer;
+
+	color:#ffffff;
+
+	font-family:Arial;
+
+	font-size:32px;
+
+	font-weight:bold;
+
+	text-decoration:none;
+
+	text-shadow:0px 2px 0px #5b8a3c;
+
+	border-radius:16px;
+
+}
+
+
+
+#bg {
+
+    background-image: url(../param/img/bgcredits.png);
+
+    background-size: contain;
+
+    height: 100vh;
+
+}
+
+
+
+p {
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    color: coral;
+
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+
+}
+
+li {
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    color: coral;
+
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+
+}
+
+#creditLink {
+	right: 0;
+	bottom: 10px;
+	position: absolute;
+}
+
+#cdButton {
+	font-size: 16px;
+	padding: 5px;
+	background: -moz-linear-gradient(top, #F2AD45 5%, #C27D15 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #F2AD45), color-stop(1, #C27D15));
+	background: -webkit-linear-gradient(top, #F2AD45 5%, #C27D15 100%);
 }

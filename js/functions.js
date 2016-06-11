@@ -18,7 +18,8 @@ function startModule(param)
 	if (param) context = param;
 	
 	//Do something
-	
+	backToMenu();
+
 	iDol.output('module_output_event', outputParam);
 
 }
@@ -33,6 +34,7 @@ function reStartModule(param)
 	if (param) context = param;
 	
 	//Do something
+	backToMenu();
 	
 	iDol.output('module_output_event', outputParam);
 
