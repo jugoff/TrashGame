@@ -180,7 +180,7 @@ function create() {
 
     if (demo){
       for (var i = 1; i < 13; i++) {
-        var startX = ($(document).width() / 12) * i;
+        var startX = (game.width / 12) * i;
         var endX = startX;
         var startY = game.height;
         var endY = 0;
