@@ -40,7 +40,7 @@ function lose(score) {
 
 /******* Jeu (Ne pas modifier) *******/
 
-game = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS, 'gameDiv', { preload: preload, create: create, update: preupdate });
+game = new Phaser.Game(gameWidth, gameHeight, Phaser.CANVAS, 'gameDiv', { preload: preload, create: create, update: preupdate, render:render });
 game.transparent = true;
 
 var score = 0;
@@ -51,6 +51,8 @@ var scoreText, ordures, recycles, spawnEvent, endGameEvent,
 var piece, inFadeAction, readyToStart = false;
 
 var tools = {};
+
+var demo = true;
 
 tools.rand = function (min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -76,7 +78,9 @@ function preupdate() {
 
 function startGame() {
 	$('.mainImg').hide();
-    $('#creditLink').hide();
+  $('#creditLink').hide();
+  $('#testsLink').hide();
+
 
 	try {
 		endText.destroy();
@@ -172,6 +176,27 @@ function create() {
     	backgroundMusic = game.add.audio('music-ambient');
     }
 
+    // AJOUT POUR DEMO //
+
+    if (demo){
+      for (var i = 1; i < 13; i++) {
+        var startX = ($(document).width() / 12) * i;
+        var endX = startX;
+        var startY = game.height;
+        var endY = 0;
+        window['line' + i] = new Phaser.Line(startX, startY, endX, endY);
+      }
+    }
+
+}
+
+function render(){
+  if (demo){
+    for (var i = 1; i < 13; i++) {
+      game.debug.geom(window['line' + i], "#ff0000", false);
+    }
+
+  }
 }
 
 function update() {
@@ -352,4 +377,5 @@ function stopGameProcess() {
 function backToMenu() {
 	$('.mainImg').show();
 	$('#creditLink').show();
+  $('#testsLink').show();
 }
